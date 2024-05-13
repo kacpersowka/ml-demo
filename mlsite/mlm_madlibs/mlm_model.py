@@ -7,7 +7,7 @@ tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 def get_masked_guesses(text,model):
     tokens=tokenizer(text,return_tensors='pt')
     masks=[i for i in range(len(tokens['input_ids'][0])) if tokens['input_ids'][0][i]==103]
-    outputs = model(**tokens)
+    outputs=model(**tokens)
     mask_guesses=dict()
     for i in masks:
         mask_guesses[i]=sorted([(_,float(outputs.logits[0][i][_])) for _ in range(len(outputs.logits[0][i]))],key=lambda x:-x[1])
@@ -18,4 +18,4 @@ def show_guess(text,guesses,index=0):
     masks=[i for i in range(len(tokens['input_ids'])) if tokens['input_ids'][i]==103]
     for i in masks:
         tokens['input_ids'][i]=guesses[i][index][0]
-    return tokenizer.decode(tokens['input_ids'])
+    return tokenizer.decode(tokens['input_ids'][1:-1])

@@ -1,0 +1,12 @@
+<h1>Masked Language Modelling</h1>
+
+
+<form action='.' method='POST'>
+	{% csrf_token %}
+	<label for="text">Text:</label><br>
+	<input type="text" id="text" name="text" size=100><br>
+	<input type="submit" value="Submit">
+</form><p>
+{% if text %}
+{{text}}
+{% endif %}
