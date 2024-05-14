@@ -1,5 +1,4 @@
 from transformers import AutoTokenizer,AutoModelForMaskedLM
-import torch
 
 model = AutoModelForMaskedLM.from_pretrained('bert-base-uncased')
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
@@ -22,7 +21,20 @@ def show_guess(text,guesses,index=0):
 
 def show_all_guesses(text,guesses,limit=50):
     tokens=tokenizer(text)
-    return [[(tokenizer.decode(_[0]),_[1]) for _ in guesses[i][:limit]] if tokens['input_ids'][i]==103 else tokenizer.decode(tokens['input_ids'][i]) for i in range(len(tokens['input_ids']))]
+    unmasked=[[(tokenizer.decode(_[0]),_[1]) for _ in guesses[i][:limit]] if tokens['input_ids'][i]==103 else tokens['input_ids'][i] for i in range(len(tokens['input_ids']))]
+    output=[]
+    for i in unmasked:
+        if i in [101,102]:
+            continue
+        if type(i)==list:
+            output.append(tuple(i))
+        else:
+            if len(output)>0 and type(output[-1])==list:
+                output[-1].append(i)
+            else:
+                output.append([i])
+    return [i if type(i)==tuple else tokenizer.decode(i) for i in output]
+
 
 def retokenize(text):
     return tokenizer.decode(tokenizer.encode(text)[1:-1])

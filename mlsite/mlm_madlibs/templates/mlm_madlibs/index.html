@@ -1,33 +1,42 @@
-<h1>Masked Language Modelling</h1>
-
-
-<form action='.' method='POST'>
-	{% csrf_token %}
-	<input type="hidden" id="form_type" name="form_type" value="predict_masks"></input>
-	<label for="text">Text:</label><br>
-	{% if original %}
-		<input type="text" id="text" name="text" size=100 value="{{original}}"><br>
-	{% else %}
-	<input type="text" id="text" name="text" size=100><br>
-	{% endif %}
-	<input type="submit" value="Submit">
-</form><p>
-{% if text %}
-	<form action='.' id='predicted_sentence' method="POST">
+<head>
+	<script>
+		function maskSelection() {
+			selected=window.getSelection().toString().trim()
+			index=document.getElementById('text').value.search(selected)
+			document.getElementById('text').value=document.getElementById('text').value.slice(0,index)+"[MASK]"+document.getElementById('text').value.slice(index+selected.length)
+		}
+	</script>
+</head>
+<body>
+	<h1>Masked Language Modelling</h1>
+	<form action='.' method='POST'>
 		{% csrf_token %}
-		<input type="hidden" id="form_type" name="form_type" value="resolve_masks"></input>
-		{% for x in text %}
-			{% if x.type == "word" %}
-				{{x.value}}<input type="hidden" id="word_{{forloop.counter}}" name="word_{{forloop.counter}}" value="{{x.value}}"></input>
-			{% elif x.type == "list" %}
-				<select id="mask_{{forloop.counter}}" name="mask_{{forloop.counter}}">
-					{% for item in x.value %}
-						<option value="{{item}}">{{item}}</option>
-					{% endfor %}
-				</select>
-			{% endif %}
-		{% endfor %}
-		<br>
-		<input type="submit" value="Submit">
-	</form>
-{% endif %}
+		<input type="hidden" id="form_type" name="form_type" value="predict_masks"></input>
+		<label for="text">Text:</label><br>
+		{% if original %}
+			<input type="text" id="text" name="text" size=100 value="{{original}}"><br>
+		{% else %}
+		<input type="text" id="text" name="text" size=100><br>
+		{% endif %}
+		<input type="submit" value="Submit"> <input type="button" value="Mask" onclick="maskSelection()">
+	</form><p>
+	{% if text %}
+		<form action='.' id='predicted_sentence' method="POST">
+			{% csrf_token %}
+			<input type="hidden" id="form_type" name="form_type" value="resolve_masks"></input>
+			{% for x in text %}
+				{% if x.type == "word" %}
+					{{x.value}}<input type="hidden" id="word_{{forloop.counter}}" name="word_{{forloop.counter}}" value="{{x.value}}"></input>
+				{% elif x.type == "list" %}
+					<select id="mask_{{forloop.counter}}" name="mask_{{forloop.counter}}">
+						{% for item in x.value %}
+							<option value="{{item}}">{{item}}</option>
+						{% endfor %}
+					</select>
+				{% endif %}
+			{% endfor %}
+			<br>
+			<input type="submit" value="Submit">
+		</form>
+	{% endif %}
+</body>

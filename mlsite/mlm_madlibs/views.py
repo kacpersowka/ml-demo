@@ -9,8 +9,8 @@ def index(request):
         if request.POST['form_type']=='predict_masks':
             g=get_masked_guesses(request.POST['text'],model)
             pred=show_all_guesses(request.POST['text'],g)
-            #print(pred)
-            context={'original':request.POST['text'],'text':[{'type':'list','value':[z[0] for z in _]} if type(_)==list else {'type':'word','value':_} for _ in pred[1:-1]]}
+            print([type(i) for i in pred])
+            context={'original':request.POST['text'],'text':[{'type':'list','value':[z[0] for z in _]} if type(_)==tuple else {'type':'word','value':_} for _ in pred]}
         elif request.POST['form_type']=='resolve_masks':
             print(request.POST)
             words=[request.POST[_] for _ in sorted([i for i in request.POST.keys() if 'word_' in i or 'mask_' in i],key=lambda x:int(x[x.index('_')+1:]))]
