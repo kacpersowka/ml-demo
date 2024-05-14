@@ -4,9 +4,25 @@
 <form action='.' method='POST'>
 	{% csrf_token %}
 	<label for="text">Text:</label><br>
+	{% if original %}
+		<input type="text" id="text" name="text" size=100 value="{{original}}"><br>
+	{% else %}
 	<input type="text" id="text" name="text" size=100><br>
+	{% endif %}
 	<input type="submit" value="Submit">
 </form><p>
+<div id='predicted_sentence'>
 {% if text %}
-{{text}}
+	{% for x in text %}
+		{% if x.type == "word" %}
+			{{x.value}} 
+		{% elif x.type == "list" %}
+			<select>
+				{% for item in x.value %}
+					<option>{{item}}</option>
+				{% endfor %}
+			</select>
+		{% endif %}
+	{% endfor %}
 {% endif %}
+</div>
