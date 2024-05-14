@@ -22,4 +22,7 @@ def show_guess(text,guesses,index=0):
 
 def show_all_guesses(text,guesses,limit=50):
     tokens=tokenizer(text)
-    return [[tokenizer.decode(_[0]) for _ in guesses[i][:limit]] if tokens['input_ids'][i]==103 else tokenizer.decode(tokens['input_ids'][i]) for i in range(len(tokens['input_ids']))]
+    return [[(tokenizer.decode(_[0]),_[1]) for _ in guesses[i][:limit]] if tokens['input_ids'][i]==103 else tokenizer.decode(tokens['input_ids'][i]) for i in range(len(tokens['input_ids']))]
+
+def retokenize(text):
+    return tokenizer.decode(tokenizer.encode(text)[1:-1])

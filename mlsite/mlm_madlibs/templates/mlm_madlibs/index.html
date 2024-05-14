@@ -3,6 +3,7 @@
 
 <form action='.' method='POST'>
 	{% csrf_token %}
+	<input type="hidden" id="form_type" name="form_type" value="predict_masks"></input>
 	<label for="text">Text:</label><br>
 	{% if original %}
 		<input type="text" id="text" name="text" size=100 value="{{original}}"><br>
@@ -11,18 +12,22 @@
 	{% endif %}
 	<input type="submit" value="Submit">
 </form><p>
-<div id='predicted_sentence'>
 {% if text %}
-	{% for x in text %}
-		{% if x.type == "word" %}
-			{{x.value}} 
-		{% elif x.type == "list" %}
-			<select>
-				{% for item in x.value %}
-					<option>{{item}}</option>
-				{% endfor %}
-			</select>
-		{% endif %}
-	{% endfor %}
+	<form action='.' id='predicted_sentence' method="POST">
+		{% csrf_token %}
+		<input type="hidden" id="form_type" name="form_type" value="resolve_masks"></input>
+		{% for x in text %}
+			{% if x.type == "word" %}
+				{{x.value}}<input type="hidden" id="word_{{forloop.counter}}" name="word_{{forloop.counter}}" value="{{x.value}}"></input>
+			{% elif x.type == "list" %}
+				<select id="mask_{{forloop.counter}}" name="mask_{{forloop.counter}}">
+					{% for item in x.value %}
+						<option value="{{item}}">{{item}}</option>
+					{% endfor %}
+				</select>
+			{% endif %}
+		{% endfor %}
+		<br>
+		<input type="submit" value="Submit">
+	</form>
 {% endif %}
-</div>
